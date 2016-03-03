@@ -11,6 +11,7 @@ void SetPWM_P8_13(int period,int duty);
 void SetPWM_P9_14(int period,int duty);
 void SetPWM_P9_21(int period,int duty);
 void SetPWM_P9_42(int period,int duty);
+int Read_PWM(int dir);
 
 
 

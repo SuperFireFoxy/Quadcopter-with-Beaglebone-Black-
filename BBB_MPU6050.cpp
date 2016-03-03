@@ -107,6 +107,7 @@ void *BBB_MPU6050(void *ptr){
 	printf ("%d\t%d\t%d\t:\t%d\t%d\t%d\n",ax,ay,az,gx,gy,gz);
 	}
 */	
+	int i=0;
 	while(1){
 		   
 		   MPU.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
@@ -115,13 +116,19 @@ void *BBB_MPU6050(void *ptr){
 		   clock_gettime( CLOCK_REALTIME, &timepcs );
 		   difference = (timepcs.tv_sec - start.tv_sec) + (double)(timepcs.tv_nsec - start.tv_nsec)/1000000000.0d;
 		   MPU6050_GetAngle(ax,ay,az,gx,gy,gz);
-		   PIDUpdate(XAngle,YAngle,ZAngle,0,0,0,pidXres,pidYres,pidZres);
+		   PIDUpdate(XAngle,YAngle,ZAngle,0,0,0,&pidXres,&pidYres,&pidZres);
 		   clock_gettime( CLOCK_REALTIME, &start);
-		   
-		   printf ("ax\tay\taz\t:\tgx\tgy\tgz [Time:%f Sec]\n", difference);
-		   printf ("%d\t%d\t%d\t:\t%d\t%d\t%d\n",ax,ay,az,gx,gy,gz);		   
-		   printf ("%f\t%f\t%f\t:\n%f\t%f\t%f\n%f\t%f\t%f\n",AXres,AYres,AZres,GXres,GYres,GZres,XAngle,YAngle,ZAngle);
-		   printf ("%f\t%f\t%f\n",pidXres.pidterm,pidYres.pidterm,pidZres.pidterm);
+		   if(i=1000)
+		   	{	
+			   printf ("ax\tay\taz\t:\tgx\tgy\tgz [Time:%f Sec]\n", difference);
+			   printf ("%d\t%d\t%d\t:\t%d\t%d\t%d\n",ax,ay,az,gx,gy,gz);		   
+			   printf ("%f\t%f\t%f\t:\n%f\t%f\t%f\n%f\t%f\t%f\n",AXres,AYres,AZres,GXres,GYres,GZres,XAngle,YAngle,ZAngle);
+			   printf ("%f\t%f\t%f\n",pidXres.pidterm,pidYres.pidterm,pidZres.pidterm);
+			   i=1;	
+		   }
+		   else{
+			i++;	
+		   }
 	}
 
 	//return 0;
@@ -148,56 +155,56 @@ float MPU6050_GetAngle(int16_t ax,int16_t ay,int16_t az,int16_t gx,int16_t gy,in
 	YAngle=0.95*GYres+0.05*AYres;
 		
 }
-float PIDUpdate(float nowXAngle,float nowYAngle,float nowZAngle,float targetXAngle,float targetYAngle,float targetZAngle,pid pidX,pid pidY,pid pidZ)
+float PIDUpdate(float nowXAngle,float nowYAngle,float nowZAngle,float targetXAngle,float targetYAngle,float targetZAngle,pid *pidX,pid *pidY,pid *pidZ)
 {
 	float Xerror=nowXAngle-targetXAngle;
 	float Yerror=nowYAngle-targetYAngle;
 	float Zerror=nowZAngle-targetZAngle;
-	printf ("%f\t%f\t%f\t error\n",Xerror,Yerror,Zerror);
-	pidX.Pgain=1.5;
-	pidX.Igain=2;
-	pidY.Pgain=1.5;
-	pidY.Igain=2;
-	pidZ.Pgain=1.5;
-	pidZ.Igain=2;
+	//printf ("%f\t%f\t%f\t error\n",Xerror,Yerror,Zerror);
+	pidX->Pgain=1.5;
+	pidX->Igain=2;
+	pidY->Pgain=1.5;
+	pidY->Igain=2;
+	pidZ->Pgain=1.5;
+	pidZ->Igain=2;
 	if(Xerror>=-1.5 && Xerror<=1.5)
 		{
-		pidX.lasterror=Xerror;
-		pidX.pidterm=0;
+		pidX->lasterror=Xerror;
+		pidX->pidterm=0;
 		}
 	else
 		{
-		pidX.Pterm=pidX.Pgain*Xerror;
-		pidX.Dterm=pidX.Dgain*(Xerror-pidX.lasterror);
-		pidX.lasterror=Xerror;
-		pidX.pidterm=pidX.Pterm+pidX.Dterm;
+		pidX->Pterm=pidX->Pgain*Xerror;
+		pidX->Dterm=pidX->Dgain*(Xerror-pidX->lasterror);
+		pidX->lasterror=Xerror;
+		pidX->pidterm=pidX->Pterm+pidX->Dterm;
 		}
 	
 	if(Yerror>=-1.5 && Yerror<=1.5)
 		{
-		pidY.lasterror=Yerror;
-		pidY.pidterm=0;
+		pidY->lasterror=Yerror;
+		pidY->pidterm=0;
 		}
 	else{
-		pidY.Pterm=pidY.Pgain*Yerror;
-		pidY.Dterm=pidY.Dgain*(Yerror-pidY.lasterror);
-		pidY.lasterror=Yerror;
-		pidY.pidterm=pidY.Pterm+pidY.Dterm;
+		pidY->Pterm=pidY->Pgain*Yerror;
+		pidY->Dterm=pidY->Dgain*(Yerror-pidY->lasterror);
+		pidY->lasterror=Yerror;
+		pidY->pidterm=pidY->Pterm+pidY->Dterm;
 		}
 	
 	if(Zerror>=-1.5 && Zerror<=1.5) 
 		{
-		pidZ.lasterror=Zerror;
-		pidZ.pidterm=0;
+		pidZ->lasterror=Zerror;
+		pidZ->pidterm=0;
 		}
 	else
 		{
-		pidZ.Pterm=pidZ.Pgain*Zerror;
-		pidZ.Dterm=pidZ.Dgain*(Zerror-pidZ.lasterror);
-		pidZ.lasterror=Zerror;
-		pidZ.pidterm=pidZ.Pterm+pidZ.Dterm;
+		pidZ->Pterm=pidZ->Pgain*Zerror;
+		pidZ->Dterm=pidZ->Dgain*(Zerror-pidZ->lasterror);
+		pidZ->lasterror=Zerror;
+		pidZ->pidterm=pidZ->Pterm+pidZ->Dterm;
 		}
-	printf ("%f\t%f\t%f\t pidterm\n",pidX.pidterm,pidY.pidterm,pidZ.pidterm);
+	//printf ("%f\t%f\t%f\t pidterm\n",pidX->pidterm,pidY->pidterm,pidZ->pidterm);
 	return 1;
 	
 }

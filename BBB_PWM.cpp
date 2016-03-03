@@ -127,7 +127,29 @@ void SetPWM_P9_42(int period,int duty)
 
 }
 
-
+int Read_PWM(int dir)
+{
+		int duty=0;
+		FILE *stream=NULL;
+		switch(dir)
+			{
+			case 1:
+			stream=fopen(PWM_File"pwm_test_P8_13.15/duty","r+");
+			break;
+			case 2:
+			stream=fopen(PWM_File"pwm_test_P9_14.16/duty","r+");
+			break;
+			case 3:
+			stream=fopen(PWM_File"pwm_test_P9_21.17/duty","r+");
+			break;
+			case 4:
+			stream=fopen(PWM_File"pwm_test_P9_42.18/duty","r+");
+			break;
+			}
+		fscanf(stream,"%d",duty);		
+		fclose(stream);
+		return duty;
+}
 //		FILE *stream=NULL;
 //		stream=fopen(Dev_Tree"slots","w");
 //		fwrite("am33xx_pwm",sizeof(char),10,stream);
