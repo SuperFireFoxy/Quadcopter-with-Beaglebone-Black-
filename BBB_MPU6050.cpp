@@ -55,7 +55,8 @@ float AZres,GZres,AXres,GXres,AYres,GYres;
 double difference;
 
 pid pidXres,pidYres,pidZres;
-void *BBB_MPU6050(void *ptr){
+void *BBB_MPU6050(void *ptr)
+{
 	MPU6050 MPU;
 	BBB_I2C BBB_I2C;
 	uint8_t rxbuf;

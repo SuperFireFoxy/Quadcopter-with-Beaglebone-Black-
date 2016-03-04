@@ -146,7 +146,7 @@ int Read_PWM(int dir)
 			stream=fopen(PWM_File"pwm_test_P9_42.18/duty","r+");
 			break;
 			}
-		fscanf(stream,"%d",duty);		
+		fscanf(stream,"%d",&duty);		
 		fclose(stream);
 		return duty;
 }
